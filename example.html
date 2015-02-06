@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example of highcharts-axis-labels-shorten</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="http://code.highcharts.com/highcharts.src.js"></script>
+        <script src="highcharts-axis-labels-shorten.js"></script>
+    </head>
+    <body>
+
+        <!--
+            container for highcharts chart, 100% in width,
+            resize the browser window to see it in action
+         -->
+        <div id="container" style="width:100%"></div>
+        <script type="text/javascript">
+            $(function () {
+                $('#container').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Example chart'
+                    },
+                    xAxis: {
+                        categories: [
+                            'First category',
+                            'Second category',
+                            'Third category',
+                            'Fourth category',
+                            'Fifth category',
+                            'Sixth category',
+                            'Seventh category'
+                        ],
+
+                        tickmarkPlacement: 'on',
+                        shortenLabels: true
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Measure'
+                        }
+                    },
+                    series: [{
+                        name: 'M1',
+                        data: [1, 0, 4, 2, 2, 2, 7]
+                    }]
+                });
+            });
+        </script>
+    </body>
+</html>
+
+
+

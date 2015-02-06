@@ -1,0 +1,29 @@
+{
+    "name": "highcharts-axis-labels-shorten",
+    "version": "0.0.1",
+    "title": "Shorten axis labels for X axis",
+    "author": {
+        "name": "Petr Benes"
+    },
+    "licenses": [
+        {
+            "type": "MIT"
+        }
+    ],
+    "dependencies": {
+        "highcharts": ">=3.0.0"
+    },
+    "description": "This plugin allows the user to shorten x axis labels. Needs to measure texts and currently works only for svg rendering.",
+    "keywords": [
+        "xaxis",
+        "label",
+        "shorten"
+    ],
+    "homepage": "https://github.com/xbenes/highcharts-axis-labels-shorten",
+    "docs": "https://github.com/xbenes/highcharts-axis-labels-shorten",
+    "bugs": "https://github.com/xbenes/highcharts-axis-labels-shorten",
+    "download": "https://github.com/xbenes/highcharts-axis-labels-shorten",
+    "demo": [
+        ""
+    ]
+}
