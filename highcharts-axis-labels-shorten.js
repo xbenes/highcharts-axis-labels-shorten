@@ -15,6 +15,33 @@
 (function (H) {
     'use strict';
 
+
+    /**
+     * Get path specified by string, computed from given object
+     * @param object object from which the path is to be extracted
+     * @param path path to be extracted
+     * @return object at given path or undefined
+     */
+    var getPath = function(object, path) {
+        if (object === undefined) {
+            return undefined;
+        }
+
+        if (path.length === 0) {
+            return object;
+        }
+
+        var dotIndex = path.indexOf('.');
+        var prefix = path, suffix = "";
+
+        if (dotIndex !== -1) {
+            prefix = path.substring(0, dotIndex);
+            suffix = path.substring(dotIndex + 1);
+        }
+
+        return getPath(object[prefix], suffix);
+    };
+
     var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
    /**
@@ -189,19 +216,15 @@
         // to be able to correctly configure tick positioner
         proceed.apply(this, [chart, options]);
 
-        var safeOptions = H.merge(true, {
-            labels: {
-                style: {
-                    fontSize: '11px',
-                    fontFamily: '"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif'
-                }
-            }
-        }, this.options);
+        // extract font family and size for further use
+        var fontFamily = getPath(this.options, 'labels.style.fontFamily') ||
+            getPath(this.chart, 'userOptions.chart.style.fontFamily') ||
+            '"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif';
+        var fontSize = getPath(this.options, 'labels.style.fontSize') || '11px';
 
-        customOptions.style = 'color:red;font-size:' + safeOptions.labels.style.fontSize +
-            ';font-family:' + safeOptions.labels.style.fontFamily;
+        customOptions.style = 'font-size:' + fontSize + ';font-family:' + fontFamily;
 
-        var axisFontSize = parseFloat(safeOptions.labels.style.fontSize);
+        var axisFontSize = parseFloat(fontSize);
 
         H.merge(true, this.options, {
             tickPositioner: function() {
