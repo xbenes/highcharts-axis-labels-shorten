@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example of highcharts-axis-labels-shorten</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="http://code.highcharts.com/highcharts.src.js"></script>
+        <script src="highcharts-axis-labels-shorten.js"></script>
+    </head>
+    <body>
+
+        <!--
+            container for highcharts chart, 100% in width,
+            resize the browser window to see it in action
+         -->
+        <div id="container" style="width:100%"></div>
+        <script type="text/javascript">
+            $(function () {
+                $('#container').highcharts({
+                    chart: {
+                        type: 'column',
+                        style: {
+                            //fontFamily: "times"
+                        }
+                    },
+                    title: {
+                        text: 'Example chart'
+                    },
+                    xAxis: {
+                        categories: [
+                            'Category 1',
+                            'Category 2',
+                            'Category 3',
+                            'Category 4',
+                            'Category 5',
+                            'Category 6',
+                            'Category 7',
+                            'Category 8',
+                            'Category 9',
+                            'Category 10',
+                            'Category 11',
+                            'Category 12',
+                            'Category 13',
+                            'Category 14',
+                            'Category 15',
+                            'Category 16',
+                            'Category 17',
+                            'Category 18',
+                            'Category 19',
+                            'Category 20',
+                            'Category 21',
+                            'Category 22',
+                            'Category 23',
+                            'Category 24',
+                            'Category 25',
+                        ],
+
+                        labels: {
+                            //rotation: -40
+                            //style: { fontFamily: 'arial', fontSize: '12px' }
+                        },
+
+                        tickmarkPlacement: 'on',
+                        shortenLabels: true
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Measure'
+                        }
+                    },
+                    series: [{
+                        name: 'M1',
+                        data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+                    }]
+                });
+            });
+        </script>
+    </body>
+</html>
+
+
+

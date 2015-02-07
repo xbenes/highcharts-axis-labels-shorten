@@ -20,7 +20,7 @@ xAxis: {
 
 ```
 
-See `example.html` for more detail.
+See `example.html` and `example-many-categories.html` for more details.
 
 demo
 ====
