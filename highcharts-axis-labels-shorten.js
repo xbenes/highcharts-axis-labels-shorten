@@ -36,10 +36,11 @@
    /**
     * Measure text width/height with given className, in svg
     * @param text text to be measured
+    * @param style style string to be applied directly to the element
     * @param className className to apply to use for example correct font
     * @return width and height of the text
     */
-    var measureText = function(text, className) {
+    var measureText = function(text, style, className) {
         if (!text || text.length === 0) {
             return {
                 height: 0,
@@ -54,7 +55,13 @@
             container.setAttribute('class', className);
         }
 
-        var textSVG = makeSVG('text', {x: -1000, y: -1000});
+        var textSVG = makeSVG('text', {
+            x: -1000,
+            y: -1000,
+            //fill: 'red', // debug
+            style: style
+        });
+
         var textNode = document.createTextNode(text);
         textSVG.appendChild(textNode);
         container.appendChild(textSVG);
@@ -74,16 +81,17 @@
     * @param text text to be shortened
     * @param width width to which the shortened text should fit
     * @param measureFunction function used to measure text
+    * @param style style string to be applied directly to the element
     * @param className class name to be assigned for example for specifying font
     * @return text shortened
     */
-    var getShortened = function(text, width, measureFunction, className) {
+    var getShortened = function(text, width, measureFunction, style, className) {
         var w,
             short = text,
             shortened = false;
 
         do {
-            w = measureFunction.call(this, short, className).width;
+            w = measureFunction.call(this, short, style, className).width;
             if (w < width) {
                 break;
             }
@@ -117,19 +125,21 @@
     };
 
     TextShortener.prototype = {
-        getShortened: function(text, width, className) {
-            return getShortened.call(this, text, width, this.measureText, className);
+        getShortened: function(text, width, style, className) {
+            return getShortened.call(this, text, width, this.measureText, style, className);
         },
 
-        measureText: function(text, className) {
-            var classCache = this._cache[className] =
-                this._cache[className] || {};
+        measureText: function(text, style, className) {
+            var cacheKey = style + '|' + className;
+
+            var classCache = this._cache[cacheKey] =
+                this._cache[cacheKey] || {};
 
             if (classCache[text]) {
                 return classCache[text];
             }
 
-            classCache[text] = measureText.call(this, text, className);
+            classCache[text] = measureText.call(this, text, style, className);
             return classCache[text];
         }
     };
@@ -141,6 +151,10 @@
      */
     H.wrap(H.Axis.prototype, 'init', function(proceed, chart, options) {
 
+        // constants
+        var MAX_X_AXIS_HEIGHT = 200,
+            LABEL_EXPECTED_WIDTH = 80;
+
         // treat shortening differently when labels are rotated
         var labelsRotated = options.labels && options.labels.rotation;
 
@@ -149,6 +163,8 @@
             return;
         }
 
+        var customOptions = {};
+
         H.merge(true, options, {
             labels: {
                 maxStaggerLines: 1,
@@ -156,16 +172,41 @@
                 formatter: function() {
                     // shorten; compute first how many pixels are available to one tick,
                     // provided that we have skipped some ticks
-                    var pixelWidth = labelsRotated ? 200 :
+                    var pixelWidth = labelsRotated ? MAX_X_AXIS_HEIGHT :
                         Math.round(this.chart.plotWidth / this.axis.tickPositions.length);
+
                     // shortent text to pixel width using custom helpers
                     // Note: this is only svg-compliant, don't care about vml
-                    return ts.getShortened(this.value, pixelWidth, 'highcharts-axis-labels');
+                    return ts.getShortened(this.value, pixelWidth, customOptions.style);
                 }
             },
+            categories: options.categories.map(function(category) {
+                return category.replace(/ /g, '\u00A0');
+            })
+        });
+
+        // run original axis initialize to find what's the font size of labels
+        // to be able to correctly configure tick positioner
+        proceed.apply(this, [chart, options]);
+
+        var safeOptions = H.merge(true, {
+            labels: {
+                style: {
+                    fontSize: '11px',
+                    fontFamily: '"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif'
+                }
+            }
+        }, this.options);
+
+        customOptions.style = 'color:red;font-size:' + safeOptions.labels.style.fontSize +
+            ';font-family:' + safeOptions.labels.style.fontFamily;
+
+        var axisFontSize = parseFloat(safeOptions.labels.style.fontSize);
+
+        H.merge(true, this.options, {
             tickPositioner: function() {
                 // label size in pixels
-                var perTickWidth = labelsRotated ? 20 : 80,
+                var perTickWidth = labelsRotated ? 2*axisFontSize : LABEL_EXPECTED_WIDTH,
                     ticks = Math.floor(this.chart.plotWidth / perTickWidth);
 
                 // how many ticks we skip to keep them non-overlapping with
@@ -177,13 +218,8 @@
                     return idx % skip === 0;
                 });
                 return indices;
-            },
-            categories: options.categories.map(function(category) {
-                return category.replace(/ /g, '\u00A0');
-            })
+            }
         });
-
-        proceed.apply(this, [chart, options]);
 
     });
 
