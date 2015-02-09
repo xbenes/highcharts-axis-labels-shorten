@@ -58,6 +58,15 @@
         return getPath(object[split.prefix], split.suffix);
     };
 
+    /**
+     * Get the new string which has non-breakable spaces
+     * @param string input string
+     * @return string with spaces replaced to non-breakable
+     */
+    var getHardSpaced = function(string) {
+        return string.replace(/ /g, '\u00A0');
+    };
+
     var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
    /**
@@ -221,9 +230,7 @@
             // Note: this is only svg-compliant, don't care about vml
             return ts.getShortened(this.value, pixelWidth, customOptions.style);
         };
-        options.categories = options.categories.map(function(category) {
-            return category.replace(/ /g, '\u00A0');
-        });
+        options.categories = options.categories.map(getHardSpaced);
 
         // run original axis initialize to find what's the font size of labels
         // to be able to correctly configure tick positioner
@@ -268,6 +275,17 @@
         };
 
     });
+
+    /**
+     * Wrap Highcharts Axis setCategories
+     */
+    H.wrap(H.Axis.prototype, 'setCategories', function(proceed, categories) {
+        var hardSpaced = categories.map(getHardSpaced);
+        proceed.apply(this, [hardSpaced].concat(
+            Array.prototype.slice.call(arguments, 2)
+        ));
+    });
+
 
 }(Highcharts));
 
