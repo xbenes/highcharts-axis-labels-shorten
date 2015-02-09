@@ -15,6 +15,29 @@
 (function (H) {
     'use strict';
 
+    /**
+     * Split a string by the first occurence of given character
+     * Example:
+     * splitByFirst('abc.def', '.') returns { prefix: 'abc', suffix: 'def' }
+     *
+     * @param string string to be split
+     * @param chart splitting char
+     * @return object with prefix and suffix keys
+     */
+    var splitByFirst = function(string, char) {
+        var index = string.indexOf(char);
+        var prefix = string, suffix = '';
+
+        if (index !== -1) {
+            prefix = string.substring(0, index);
+            suffix = string.substring(index + 1);
+        }
+
+        return ({
+            prefix: prefix,
+            suffix: suffix
+        });
+    };
 
     /**
      * Get path specified by string, computed from given object
@@ -31,15 +54,8 @@
             return object;
         }
 
-        var dotIndex = path.indexOf('.');
-        var prefix = path, suffix = "";
-
-        if (dotIndex !== -1) {
-            prefix = path.substring(0, dotIndex);
-            suffix = path.substring(dotIndex + 1);
-        }
-
-        return getPath(object[prefix], suffix);
+        var split = splitByFirst(path, '.');
+        return getPath(object[split.prefix], split.suffix);
     };
 
     var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
