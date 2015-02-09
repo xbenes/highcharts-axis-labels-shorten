@@ -254,7 +254,7 @@
         this.options.tickPositioner = function() {
             // label size in pixels
             var perTickWidth = labelsRotated ? 2*axisFontSize : LABEL_EXPECTED_WIDTH,
-                ticks = Math.floor(this.chart.plotWidth / perTickWidth);
+                ticks = Math.floor(this.width / perTickWidth);
 
             // how many ticks we skip to keep them non-overlapping with
             // reasonable label size
