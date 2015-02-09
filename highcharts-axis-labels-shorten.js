@@ -192,24 +192,21 @@
 
         var customOptions = {};
 
-        H.merge(true, options, {
-            labels: {
-                maxStaggerLines: 1,
-                overflow: false,
-                formatter: function() {
-                    // shorten; compute first how many pixels are available to one tick,
-                    // provided that we have skipped some ticks
-                    var pixelWidth = labelsRotated ? MAX_X_AXIS_HEIGHT :
-                        Math.round(this.chart.plotWidth / this.axis.tickPositions.length);
+        options.labels = options.labels || {};
+        options.labels.maxStaggerLines = 1;
+        options.labels.overflow = false;
+        options.labels.formatter = function() {
+            // shorten; compute first how many pixels are available to one tick,
+            // provided that we have skipped some ticks
+            var pixelWidth = labelsRotated ? MAX_X_AXIS_HEIGHT :
+                Math.round(this.chart.plotWidth / this.axis.tickPositions.length);
 
-                    // shortent text to pixel width using custom helpers
-                    // Note: this is only svg-compliant, don't care about vml
-                    return ts.getShortened(this.value, pixelWidth, customOptions.style);
-                }
-            },
-            categories: options.categories.map(function(category) {
-                return category.replace(/ /g, '\u00A0');
-            })
+            // shortent text to pixel width using custom helpers
+            // Note: this is only svg-compliant, don't care about vml
+            return ts.getShortened(this.value, pixelWidth, customOptions.style);
+        };
+        options.categories = options.categories.map(function(category) {
+            return category.replace(/ /g, '\u00A0');
         });
 
         // run original axis initialize to find what's the font size of labels
@@ -226,23 +223,21 @@
 
         var axisFontSize = parseFloat(fontSize);
 
-        H.merge(true, this.options, {
-            tickPositioner: function() {
-                // label size in pixels
-                var perTickWidth = labelsRotated ? 2*axisFontSize : LABEL_EXPECTED_WIDTH,
-                    ticks = Math.floor(this.chart.plotWidth / perTickWidth);
+        this.options.tickPositioner = function() {
+            // label size in pixels
+            var perTickWidth = labelsRotated ? 2*axisFontSize : LABEL_EXPECTED_WIDTH,
+                ticks = Math.floor(this.chart.plotWidth / perTickWidth);
 
-                // how many ticks we skip to keep them non-overlapping with
-                // reasonable label size
-                var skip = Math.ceil(this.categories.length / ticks);
-                var indices = this.categories.map(function(category, index) {
-                    return index;
-                }).filter(function(idx) {
-                    return idx % skip === 0;
-                });
-                return indices;
-            }
-        });
+            // how many ticks we skip to keep them non-overlapping with
+            // reasonable label size
+            var skip = Math.ceil(this.categories.length / ticks);
+            var indices = this.categories.map(function(category, index) {
+                return index;
+            }).filter(function(idx) {
+                return idx % skip === 0;
+            });
+            return indices;
+        };
 
     });
 
