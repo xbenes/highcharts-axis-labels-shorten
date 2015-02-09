@@ -229,11 +229,23 @@
         // to be able to correctly configure tick positioner
         proceed.apply(this, [chart, options]);
 
+        // labels can be set in font: '15px Arial' form
+        var labelsFontString = getPath(this.options, 'labels.style.font');
+        var parsedFont = {};
+        if (labelsFontString) {
+            var split = splitByFirst(labelsFontString, ' ');
+            parsedFont.fontSize = split.prefix;
+            parsedFont.fontFamily = split.suffix;
+        }
+
         // extract font family and size for further use
-        var fontFamily = getPath(this.options, 'labels.style.fontFamily') ||
+        var fontFamily = parsedFont.fontFamily ||
+            getPath(this.options, 'labels.style.fontFamily') ||
             getPath(this.chart, 'userOptions.chart.style.fontFamily') ||
             '"Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif';
-        var fontSize = getPath(this.options, 'labels.style.fontSize') || '11px';
+
+        var fontSize = parsedFont.fontSize ||
+            getPath(this.options, 'labels.style.fontSize') || '11px';
 
         customOptions.style = 'font-size:' + fontSize + ';font-family:' + fontFamily;
 
